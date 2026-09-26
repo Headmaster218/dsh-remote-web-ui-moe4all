@@ -23,7 +23,7 @@ export const FAMILY_SCOPE = '@linxin666/'
 export const AGGREGATE_PACKAGE = '@linxin666/dsh-web-all'
 
 /** Fallback anchor: this plugin's own package when the aggregate is absent. */
-export const SELF_PACKAGE = '@linxin666/dsh-remote-web-ui'
+export const SELF_PACKAGE = 'dsh-remote-web-ui-moe4all'
 
 /** GitHub repository used to surface human-readable release notes. */
 export const UPDATE_RELEASE_REPO = 'zhu1090093659/dsh-web'

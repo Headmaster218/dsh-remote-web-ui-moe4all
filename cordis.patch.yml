@@ -6,5 +6,5 @@
 # the web plugin roster, served from this package's lib/client.js).
 
 - insert:
-    - id: remote-web-ui
-      name: '@linxin666/dsh-remote-web-ui'
+    - id: remote-web-ui-moe4all
+      name: dsh-remote-web-ui-moe4all

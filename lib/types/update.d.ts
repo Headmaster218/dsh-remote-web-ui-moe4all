@@ -16,7 +16,7 @@ export declare const FAMILY_SCOPE = "@linxin666/";
 /** The aggregate package that is the canonical update entry point. */
 export declare const AGGREGATE_PACKAGE = "@linxin666/dsh-web-all";
 /** Fallback anchor: this plugin's own package when the aggregate is absent. */
-export declare const SELF_PACKAGE = "@linxin666/dsh-remote-web-ui";
+export declare const SELF_PACKAGE = "dsh-remote-web-ui-moe4all";
 /** GitHub repository used to surface human-readable release notes. */
 export declare const UPDATE_RELEASE_REPO = "zhu1090093659/dsh-web";
 /** Release-notes cache freshness window (host process). */

@@ -1,7 +1,7 @@
 {
-  "name": "@linxin666/dsh-remote-web-ui",
-  "description": "Scan-to-pair remote access for the dsh web GUI that shares one official interface: a QR beside the settings button pairs phones and PCs into the same Web GUI (a portrait-touch adaptation layer for phones, full desktop on PCs) through one-time tokens and revocable device sessions, with a LAN bind toggle, optional Cloudflare tunnel, and one-click family self-update",
-  "version": "0.3.17",
+  "name": "dsh-remote-web-ui-moe4all",
+  "description": "MoE4All edition of scan-to-pair remote access for the DSH web GUI",
+  "version": "0.3.17-moe4all.1",
   "type": "module",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
@@ -34,6 +34,19 @@
     "cordis.patch.yml"
   ],
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Headmaster218/dsh-remote-web-ui-moe4all.git"
+  },
+  "homepage": "https://github.com/Headmaster218/dsh-remote-web-ui-moe4all#readme",
+  "bugs": {
+    "url": "https://github.com/Headmaster218/dsh-remote-web-ui-moe4all/issues"
+  },
+  "moe4all": {
+    "upstream": "@linxin666/dsh-remote-web-ui@0.3.17",
+    "repository": "https://github.com/zhu1090093659/dsh-web",
+    "commit": "46f1616f26525c7b8a782968f02fa97fde2c5790"
+  },
   "dsh": {
     "engines": {
       "dsh": ">=0.1.2-rc.1"

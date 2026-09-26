@@ -18,7 +18,7 @@
  * semantic names were read off the 0.1.2-alpha.1 official client build and
  * are re-verified on every GUI QA round; rules borrowed from the dsh-LAN
  * reference (MIT, v47-v78) keep their version comments.
- * @module @linxin666/dsh-remote-web-ui/client/mobile-adapt
+ * @module dsh-remote-web-ui-moe4all/client/mobile-adapt
  */
 
 import type { RemoteKey } from './locales.ts'

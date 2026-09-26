@@ -19,7 +19,7 @@
  * settings/credentials/presets surface, and every call still rides the
  * gated /remote channel. The script self-skips on loopback origins and
  * never throws.
- * @module @linxin666/dsh-remote-web-ui/remote-channel-boot
+ * @module dsh-remote-web-ui-moe4all/remote-channel-boot
  */
 import { type RemoteChannelRules } from './remote-channel-rules.ts';
 /**

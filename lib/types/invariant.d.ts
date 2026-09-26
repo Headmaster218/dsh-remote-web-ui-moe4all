@@ -1,6 +1,6 @@
 /**
- * Package-owned invariant companion for `@linxin666/dsh-remote-web-ui`.
- * @module @linxin666/dsh-remote-web-ui/invariant
+ * Package-owned invariant companion for `dsh-remote-web-ui-moe4all`.
+ * @module dsh-remote-web-ui-moe4all/invariant
  */
 import type { Context } from '@deepseek-ai/cordis';
 /** Cordis companion plugin name. */

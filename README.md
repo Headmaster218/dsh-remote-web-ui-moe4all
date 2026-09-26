@@ -1,4 +1,6 @@
-# DSH Remote Web UI
+# DSH Remote Web UI for MoE4All
+
+> MoE4All-maintained edition of `@linxin666/dsh-remote-web-ui`. See [UPSTREAM.md](UPSTREAM.md) for the exact source checkpoint, attribution, and purpose of this independent repository.
 
 English | [中文](README.zh.md)
 > Remote access for the dsh web GUI that shares **one interface**: pair a phone or another computer from a QR beside the settings button, and both run the same official Web GUI this machine runs — phones get an injected portrait-touch adaptation, PCs get the full desktop — through one-time pairing tokens and revocable device sessions. A settings toggle binds the server to the LAN, an optional Cloudflare quick tunnel reaches the internet — fronted by a never-changing stable hostname so the phone's bookmark and pairing survive restarts with zero setup — and the sidebar checks for a newer dsh-web release with one-click self-update.

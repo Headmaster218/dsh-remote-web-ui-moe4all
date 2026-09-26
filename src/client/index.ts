@@ -125,7 +125,7 @@ export function apply(ctx: ClientContext): void {
 
   // Anonymous install heartbeat (docs/telemetry.md): one beat per browser per
   // UTC day, package name only, silent failure.
-  reportDailyHeartbeat([{ name: '@linxin666/dsh-remote-web-ui' }])
+  reportDailyHeartbeat([{ name: 'dsh-remote-web-ui-moe4all' }])
 
   ctx.effect(() => {
     try {
