@@ -37,6 +37,9 @@ export const REMOTE_API_PATHS = {
  */
 export const REMOTE_UPGRADE_PATHS = [
   REMOTE_API_PATHS.mux,
+  // DSH 0.1.1-rc.2 still opens these event-stream WebSockets.
+  `${REMOTE_API_PREFIX}/events.mux`,
+  `${REMOTE_API_PREFIX}/events.host`,
   `${REMOTE_PREFIX}/sidebar/ws/terminal`,
   `${REMOTE_PREFIX}/sidebar/ws/agent-terminals`,
   `${REMOTE_API_PREFIX}/dsh-ssh/terminal`,

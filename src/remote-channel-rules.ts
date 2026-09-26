@@ -45,11 +45,11 @@ export const REMOTE_CHANNEL_RULES: RemoteChannelRules = {
   sidebarPrefix: '/sidebar/',
   gitPrefix: '/git/',
   petPrefix: '/pet/',
-  // The official 0.1.2-alpha.2 line opens exactly one stream socket (the
-  // Typert gateway mux, /api/remote.mux); the legacy /api/events.* paths
-  // were removed by the SDK and stay absent here.
+  // Keep the 0.1.1-rc.2 event streams alongside the newer Typert mux.
   wsPaths: [
     '/api/remote.mux',
+    '/api/events.mux',
+    '/api/events.host',
     '/sidebar/ws/terminal',
     '/sidebar/ws/agent-terminals',
     '/api/dsh-ssh/terminal',

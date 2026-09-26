@@ -43,7 +43,7 @@ export function buildRemoteChannelBootScript(rules: RemoteChannelRules = REMOTE_
     // owner, so the official UI keeps its full configuration surface (the
     // settings mirror, document controller, and deliverables open actions
     // all branch on connection.isLoopback). Must run before any boot entry.
-    'try{if(w.__DSH_TRANSPORT__===undefined)w.__DSH_TRANSPORT__={};w.__DSH_TRANSPORT__.ownsHost=true}catch(e){}' +
+    'try{var T=w.__DSH_TRANSPORT__||(w.__DSH_TRANSPORT__={});T.ownsHost=true;if(typeof T.createApiClient!=="function"){T.createApiClient=function(){return undefined}}}catch(e){}' +
     'var R=' + json + ';' +
     // The cookieless device credential: read lazily per call - the
     // /pair-app capture script sets it in head AFTER this boot script ran,
