@@ -19,7 +19,17 @@ test('client bundle includes the official settings card and embedded styles', ()
   assert.match(bundle, /tag\.dataset\.pluginCss = tagId/)
   assert.doesNotMatch(bundle, /__MOE4ALL_CSS__/)
   assert.match(bundle, /moe4all\.phone-guide\.v1/)
-  assert.doesNotMatch(bundle, /require\("(?:clsx|qrcode\.react)"\)/)
+  assert.doesNotMatch(bundle, /require\("(?:clsx|qrcode\.react|@deepseek-ai\/dsh-client-store)"\)/)
+  assert.match(bundle, /require\("@deepseek-ai\/dsh-client-runtime\/client"\)/)
+  const requests = [...new Set([...bundle.matchAll(/\brequire\("([^"]+)"\)/g)].map(match => match[1]))].sort()
+  assert.deepEqual(requests, [
+    '@deepseek-ai/dsh-client-runtime/client',
+    '@deepseek-ai/dsh-client-ui-primitives',
+    'react',
+    'react-dom',
+    'react-dom/client',
+    'react/jsx-runtime',
+  ].sort())
 })
 
 test('QR adapter selection never silently widens an unavailable address', () => {

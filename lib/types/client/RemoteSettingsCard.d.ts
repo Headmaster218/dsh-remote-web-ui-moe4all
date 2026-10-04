@@ -5,7 +5,7 @@
  */
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots';
 import type { SettingsScope } from '@deepseek-ai/dsh-client-ui-settings/client';
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-store';
+import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client';
 import { type CardActions, type CardShell, type FieldState as CardFieldState } from './settings-form.ts';
 /** The remote-control fields this card edits (the namespace's full schema). */
 export interface RemoteSettings {
