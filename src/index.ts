@@ -8,7 +8,6 @@
  * phone-side pair/accept + deep-link flow.
  */
 
-import { createRequire } from 'node:module'
 import { join } from 'node:path'
 import { setInterval as nodeSetInterval, setTimeout as nodeSetTimeout } from 'node:timers'
 import type { IncomingMessage } from 'node:http'
@@ -25,7 +24,7 @@ import { DEFAULT_IDLE_EXPIRE_MS, PairingService, type PairingConfig } from './pa
 import { dshHome } from './dsh-home.ts'
 import { isPairedDeviceRequest, makeGateListener } from './gate.ts'
 import { RemoteWebUiPairing } from './pairing-access.ts'
-import { isTrustedApiRequest, makeRoutes } from './routes.ts'
+import { makeRoutes } from './routes.ts'
 import { makeRemoteApiRoutes, makeRemoteApiUpgradeRoutes } from './remote-api.ts'
 import { startRemotePresencePet, type PresencePetSeam } from './remote-presence-pet.ts'
 import { claimPostureKey, postureTargets, probePosture, releasePostureKey } from './posture.ts'
@@ -37,18 +36,6 @@ import { loadRelayIdentity, RelayRegistrar, type RelayState } from './relay-regi
 import { desiredBindHost, desiredBindPort, firewallActionNeeded, pendingRestartOf, type AppliedFirewallState, type StartupFacts } from './lan-bind-plan.ts'
 import { createInnerAuth } from './inner-auth.ts'
 import { TunnelManager, type TunnelInfo } from './tunnel.ts'
-import {
-  checkUpdates,
-  fetchGitHubReleaseNotes,
-  fetchLatestVersion,
-  RELEASE_NOTES_CACHE_TTL_MS,
-  resolveAnchorManifest,
-  resolveUpdateTarget,
-  runUpdateVerified,
-  type UpdateReleaseNotes,
-  type UpdateRunResult,
-} from './update.ts'
-import { makeUpdateRoutes } from './update-routes.ts'
 import { mountOnce } from './mount-once.ts'
 import { REMOTE_CHANNEL_BOOT_SCRIPT } from './remote-channel-boot.ts'
 import { UUID_POLYFILL_SCRIPT } from './uuid-polyfill.ts'
@@ -203,7 +190,7 @@ export const Config: z<Config> = z.object({
   offlineAfterMs: z.number().step(1).min(5_000).default(25_000),
   maxDevices: z.number().step(1).min(1).max(64).default(4),
   idleExpireMs: z.number().step(1).min(60_000).default(DEFAULT_IDLE_EXPIRE_MS),
-  cookieName: z.string().min(1).default('dsh_pair'),
+  cookieName: z.string().min(1).default('moe4all_pair'),
   requirePairingForLan: z.boolean().default(true),
   publicBaseUrl: z.string(),
   trustedHosts: z.array(z.string()),
@@ -265,7 +252,7 @@ const DEFAULTS: ResolvedConfig = {
   offlineAfterMs: 25_000,
   maxDevices: 4,
   idleExpireMs: DEFAULT_IDLE_EXPIRE_MS,
-  cookieName: 'dsh_pair',
+  cookieName: 'moe4all_pair',
   requirePairingForLan: true,
   publicBaseUrl: undefined,
   trustedHosts: undefined,
@@ -449,70 +436,6 @@ function applyImpl(ctx: Context, config?: Config): void {
   // (now vetoing every non-loopback request) instead of opening the fence.
   let disposeRoutes: (() => void) | undefined
   let disposeSweep: (() => void) | undefined
-  // ── remote update ────────────────────────────────────────────────────────
-  // The dsh-web self-update surface: probe the npm registry for family
-  // releases and run `pnpm update --latest` in the owning profile. Resolutions
-  // anchor on the host process's own module graph, so the update always
-  // targets the profile the running web GUI was booted from. The anchor path
-  // is re-resolved per operation: pnpm removes the old version's .pnpm
-  // directory on update, so a boot-time captured path would fail to read
-  // after a successful update; versions are re-read from disk per check.
-  const requireFromHost = createRequire(import.meta.url)
-  /** Host-process resolve that degrades to "not installed" (undefined) instead of throwing. */
-  const hostResolve = (specifier: string): string | undefined => {
-    try {
-      return requireFromHost.resolve(specifier)
-    } catch {
-      return undefined
-    }
-  }
-  const resolveAnchorPath = (): string | undefined => resolveAnchorManifest(hostResolve)
-
-  const releaseNotesCache = new Map<string, { at: number; notes?: UpdateReleaseNotes }>()
-  const fetchReleaseNotesCached = async (version: string): Promise<UpdateReleaseNotes | undefined> => {
-    const cached = releaseNotesCache.get(version)
-    if (cached !== undefined && Date.now() - cached.at < RELEASE_NOTES_CACHE_TTL_MS) return cached.notes
-    const notes = await fetchGitHubReleaseNotes(version, fetch)
-    releaseNotesCache.set(version, { at: Date.now(), notes })
-    return notes
-  }
-  const updateRoutes = makeUpdateRoutes({
-    // Control endpoints are host-surface only: a LAN/phone origin must never
-    // trigger a real install on this machine.
-    fence: request => isTrustedApiRequest(request, []),
-    check: () => checkUpdates({
-      anchorManifestPath: resolveAnchorPath(),
-      resolve: hostResolve,
-      fetchLatest: name => fetchLatestVersion(name, fetch),
-      fetchReleaseNotes: fetchReleaseNotesCached,
-    }),
-    run: async (): Promise<UpdateRunResult> => {
-      const target = resolveUpdateTarget({ anchorManifestPath: resolveAnchorPath() })
-      if ('error' in target) {
-        const code = target.error
-        return {
-          ok: false,
-          exitCode: null,
-          output: '',
-          error: code === 'not-found' ? 'dsh-web aggregate not installed' : 'local link install — update unavailable',
-          errorCode: code,
-        }
-      }
-      // Verify the versions actually moved after a green pnpm exit: the pnpm
-      // 11 minimumReleaseAge gate can silently keep the installed versions
-      // (same-day releases), which a plain exit-0 check would report as
-      // success — the user then restarts and nothing changed.
-      return runUpdateVerified({
-        run: { profileDir: target.profileDir, packages: target.packages },
-        check: {
-          anchorManifestPath: resolveAnchorPath(),
-          resolve: hostResolve,
-          fetchLatest: name => fetchLatestVersion(name, fetch),
-          fetchReleaseNotes: fetchReleaseNotesCached,
-        },
-      })
-    },
-  })
   // LAN-bind facts for the settings card, re-read per request so a hot
   // rebind (the patch watcher recomposes the process) and a fresh toggle
   // round are both reflected without a restart.
@@ -627,7 +550,6 @@ function applyImpl(ctx: Context, config?: Config): void {
       requirePairingForLan: () => resolve().requirePairingForLan,
       auth: innerAuth,
     }),
-    ...updateRoutes,
   ]
   const upgrades = makeRemoteApiUpgradeRoutes({
     service,
