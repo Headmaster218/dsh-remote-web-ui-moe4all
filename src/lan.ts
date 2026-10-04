@@ -14,8 +14,19 @@ import { networkInterfaces } from 'node:os'
  * authorities an all-interfaces bind is reachable by on the LAN.
  * @returns the addresses in interface order (possibly empty).
  */
+export function lanIPv4Interfaces(): Array<{ name: string; address: string }> {
+  return Object.entries(networkInterfaces()).flatMap(([name, interfaces]) =>
+    (interfaces ?? [])
+      .filter(iface => iface.family === 'IPv4' && !iface.internal)
+      .map(iface => ({ name, address: iface.address })))
+}
+
 export function lanIPv4Addresses(): string[] {
-  return Object.values(networkInterfaces()).flat()
-    .filter((iface): iface is NonNullable<typeof iface> => { return iface !== undefined && iface.family === 'IPv4' && !iface.internal })
-    .map(iface => iface.address)
+  return lanIPv4Interfaces().map(iface => iface.address)
+}
+
+export function selectedLanAddresses(addresses: readonly string[], preferred: string | undefined): string[] {
+  return preferred === undefined || preferred === ''
+    ? [...addresses]
+    : addresses.filter(address => address === preferred)
 }

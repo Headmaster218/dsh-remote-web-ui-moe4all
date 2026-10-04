@@ -125,6 +125,8 @@ export interface Config {
     relay?: boolean;
     /** Anonymous daily browser heartbeat to dsh-market.com; opt-in only. */
     telemetry?: boolean;
+    /** Interface address used in LAN pairing links; does not narrow the listener. */
+    preferredLanAddress?: string;
     /**
      * LAN bind toggle. When the user flips it (true or false) the plugin
      * writes the managed webserver block into the profile patch — true pins
@@ -155,13 +157,14 @@ export declare const Config: z<Config>;
  * which legitimately resolves to `undefined` when unset (the schema keeps it
  * optional, so `Required` alone would over-narrow it to `string`).
  */
-type ResolvedConfig = Required<Omit<Config, 'publicBaseUrl' | 'trustedHosts' | 'devicesFile' | 'lanBind' | 'profile' | 'tunnelToken'>> & {
+type ResolvedConfig = Required<Omit<Config, 'publicBaseUrl' | 'trustedHosts' | 'devicesFile' | 'lanBind' | 'profile' | 'tunnelToken' | 'preferredLanAddress'>> & {
     publicBaseUrl: string | undefined;
     trustedHosts: string[] | undefined;
     devicesFile: string;
     /** undefined until the user flips the toggle once; undefined never writes the patch. */
     lanBind: boolean | undefined;
     tunnelToken: string | undefined;
+    preferredLanAddress: string | undefined;
     profile: string;
 };
 /**

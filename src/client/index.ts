@@ -39,6 +39,7 @@ import {
 import { FenceNotice } from './FenceNotice.tsx'
 import { reportDailyHeartbeat } from './telemetry.ts'
 import { startMobileAdapt, type RemoteAdaptGlobal } from './mobile-adapt.ts'
+import { PhoneGuide } from './PhoneGuide.tsx'
 
 // Portrait-touch adaptation of the official UI: installed under the plugin
 // lifecycle (apply) so disabling the plugin in cordis patch (disabled: true)
@@ -60,6 +61,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 
   interface SlotMap {
     'settings.plugin.item': { kind: 'keyed'; scope: 'root'; owner: SettingsPluginItemOwnerProps }
+    'shell.overlay': { kind: 'list'; scope: 'root' }
   }
 }
 
@@ -164,6 +166,11 @@ export function apply(ctx: ClientContext): void {
   if (adapt !== undefined) adapt.translate = t
   const binder = ctx.get('webUiSettings') ?? ctx.settingsScope
   const settingsScope = binder.bind<RemoteSettings>({ namespace: REMOTE_WEB_UI_NS })
+  ctx.slots.inject('shell.overlay', () => ctx.slots.register({
+    name: 'shell.overlay',
+    id: 'moe4all-phone-guide',
+    locale: NS,
+  }, () => createElement(PhoneGuide, { scope: settingsScope, t })))
   const syncTelemetry = (): void => {
     const snapshot = settingsScope.getSnapshot()
     if (snapshot.status === 'ready' && snapshot.value?.telemetry === true) {

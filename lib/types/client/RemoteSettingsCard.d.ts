@@ -41,6 +41,8 @@ export interface RemoteSettings {
     relay?: boolean;
     /** Send a daily anonymous package heartbeat to dsh-market.com. */
     telemetry?: boolean;
+    /** Preferred QR address; the listener still binds all interfaces in LAN mode. */
+    preferredLanAddress?: string;
     /**
      * LAN bind toggle: once flipped, the plugin manages the profile patch's
      * webserver block (0.0.0.0 / 127.0.0.1) and the host firewall rule.
@@ -72,6 +74,7 @@ export interface RemoteSettingsCardState extends CardShell {
     /** Stable-origin relay switch. */
     relay: CardFieldState;
     telemetry: CardFieldState;
+    preferredLanAddress: CardFieldState;
     /** LAN bind toggle. */
     lanBind: CardFieldState;
 }

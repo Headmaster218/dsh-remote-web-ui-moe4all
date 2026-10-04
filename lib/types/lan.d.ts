@@ -11,5 +11,10 @@
  * authorities an all-interfaces bind is reachable by on the LAN.
  * @returns the addresses in interface order (possibly empty).
  */
+export declare function lanIPv4Interfaces(): Array<{
+    name: string;
+    address: string;
+}>;
 export declare function lanIPv4Addresses(): string[];
+export declare function selectedLanAddresses(addresses: readonly string[], preferred: string | undefined): string[];
 //# sourceMappingURL=lan.d.ts.map

@@ -204,6 +204,8 @@ export interface LanBindFrame {
   bindHost: string
   port: number
   lanUrls: string[]
+  interfaces: Array<{ name: string; address: string }>
+  preferredLanAddress: string | null
   firewall: { ok: boolean; managed: boolean; note?: string }
   platform: string
   /** true when the running bind has not caught up with the toggle yet. */

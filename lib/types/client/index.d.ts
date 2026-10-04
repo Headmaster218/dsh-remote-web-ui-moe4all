@@ -19,6 +19,10 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
             scope: 'root';
             owner: SettingsPluginItemOwnerProps;
         };
+        'shell.overlay': {
+            kind: 'list';
+            scope: 'root';
+        };
     }
 }
 /** Owner share of the sidebar remote-control seat: the column display state the trigger renders against. */

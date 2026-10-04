@@ -139,6 +139,11 @@ export interface LanBindFrame {
     bindHost: string;
     port: number;
     lanUrls: string[];
+    interfaces: Array<{
+        name: string;
+        address: string;
+    }>;
+    preferredLanAddress: string | null;
     firewall: {
         ok: boolean;
         managed: boolean;

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import { Config } from '../lib/index.js'
+import { selectedLanAddresses } from '../src/lan.ts'
 
 test('third-party network services require explicit consent', () => {
   const defaults = Config({})
@@ -17,4 +18,12 @@ test('client bundle includes the official settings card and embedded styles', ()
   assert.doesNotMatch(bundle, /ctx\.slots\.inject\("web-ui\.plugin\.item"/)
   assert.match(bundle, /tag\.dataset\.pluginCss = tagId/)
   assert.doesNotMatch(bundle, /__MOE4ALL_CSS__/)
+  assert.match(bundle, /moe4all\.phone-guide\.v1/)
+})
+
+test('QR adapter selection never silently widens an unavailable address', () => {
+  const addresses = ['192.168.1.10', '10.8.0.2']
+  assert.deepEqual(selectedLanAddresses(addresses, undefined), addresses)
+  assert.deepEqual(selectedLanAddresses(addresses, '10.8.0.2'), ['10.8.0.2'])
+  assert.deepEqual(selectedLanAddresses(addresses, '10.8.0.3'), [])
 })

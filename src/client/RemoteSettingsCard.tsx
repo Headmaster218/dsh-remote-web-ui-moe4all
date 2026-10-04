@@ -47,6 +47,8 @@ export interface RemoteSettings {
   relay?: boolean
   /** Send a daily anonymous package heartbeat to dsh-market.com. */
   telemetry?: boolean
+  /** Preferred QR address; the listener still binds all interfaces in LAN mode. */
+  preferredLanAddress?: string
   /**
    * LAN bind toggle: once flipped, the plugin manages the profile patch's
    * webserver block (0.0.0.0 / 127.0.0.1) and the host firewall rule.
@@ -79,6 +81,7 @@ export interface RemoteSettingsCardState extends CardShell {
   /** Stable-origin relay switch. */
   relay: CardFieldState
   telemetry: CardFieldState
+  preferredLanAddress: CardFieldState
   /** LAN bind toggle. */
   lanBind: CardFieldState
 }
@@ -111,6 +114,7 @@ export class RemoteSettingsCardController {
       secretField('tunnelToken'),
       booleanField('relay'),
       booleanField('telemetry'),
+      textField('preferredLanAddress'),
       booleanField('lanBind'),
     ])
     this.store = this.form.bind(() => this.projection())
@@ -131,6 +135,7 @@ export class RemoteSettingsCardController {
       tunnelToken: this.form.field('tunnelToken'),
       relay: this.form.field('relay'),
       telemetry: this.form.field('telemetry'),
+      preferredLanAddress: this.form.field('preferredLanAddress'),
       lanBind: this.form.field('lanBind'),
     }
   }
@@ -312,7 +317,12 @@ export function RemoteSettingsCard(props: RemoteSettingsCardProps) {
         onEdit={(value) => { props.edit('telemetry', value) }}
         onReset={() => { props.resetField('telemetry') }}
       />
-      <LanBindStatus t={t} />
+      <LanBindStatus
+        t={t}
+        preferred={state.preferredLanAddress.text}
+        disabled={disabled}
+        onPreferredChange={value => { props.edit('preferredLanAddress', value) }}
+      />
       <BooleanField
         id="settings-remote-lan-bind"
         label={t('settings.lanBind')}
@@ -335,7 +345,12 @@ export function RemoteSettingsCard(props: RemoteSettingsCardProps) {
  * loopback-only status endpoint; a failure (non-loopback origin) renders
  * nothing — the pairing panel carries the loopback banner instead.
  */
-function LanBindStatus({ t }: { t: TranslateNS<'remote'> }) {
+function LanBindStatus({ t, preferred, disabled, onPreferredChange }: {
+  t: TranslateNS<'remote'>
+  preferred: string
+  disabled: boolean
+  onPreferredChange(value: string): void
+}) {
   const [frame, setFrame] = useState<LanBindFrame | undefined>(undefined)
   useEffect(() => {
     let alive = true
@@ -373,6 +388,12 @@ function LanBindStatus({ t }: { t: TranslateNS<'remote'> }) {
   }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 12, lineHeight: '18px', opacity: 0.85 }}>
+      <label htmlFor="remote-preferred-lan">{t('settings.preferredLanAddress')}</label>
+      <select id="remote-preferred-lan" value={preferred} disabled={disabled} onChange={event => onPreferredChange(event.target.value)}>
+        <option value="">{t('settings.allInterfaces')}</option>
+        {(frame.interfaces ?? []).map(iface => <option key={`${iface.name}/${iface.address}`} value={iface.address}>{iface.name} - {iface.address}</option>)}
+      </select>
+      <div>{t('settings.listenerWarning')}</div>
       {lines.map((line, index) => (
         <div key={index} style={{ wordBreak: 'break-all' }}>{line}</div>
       ))}

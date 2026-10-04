@@ -28,7 +28,7 @@ import { makeRoutes } from './routes.ts'
 import { makeRemoteApiRoutes, makeRemoteApiUpgradeRoutes } from './remote-api.ts'
 import { startRemotePresencePet, type PresencePetSeam } from './remote-presence-pet.ts'
 import { claimPostureKey, postureTargets, probePosture, releasePostureKey } from './posture.ts'
-import { lanIPv4Addresses } from './lan.ts'
+import { lanIPv4Addresses, lanIPv4Interfaces, selectedLanAddresses } from './lan.ts'
 import { ensureFirewallRule, firewallSummary, removeFirewallRule } from './firewall.ts'
 import { lanBindState, writeLanBind } from './lan-bind.ts'
 import { isHttpUrl, tunnelPlanOf } from './tunnel-plan.ts'
@@ -162,6 +162,8 @@ export interface Config {
   relay?: boolean
   /** Anonymous daily browser heartbeat to dsh-market.com; opt-in only. */
   telemetry?: boolean
+  /** Interface address used in LAN pairing links; does not narrow the listener. */
+  preferredLanAddress?: string
   /**
    * LAN bind toggle. When the user flips it (true or false) the plugin
    * writes the managed webserver block into the profile patch — true pins
@@ -201,6 +203,7 @@ export const Config: z<Config> = z.object({
   tunnelToken: z.string().role('secret'),
   relay: z.boolean().default(false),
   telemetry: z.boolean().default(false),
+  preferredLanAddress: z.string(),
   lanBind: z.boolean(),
   profile: z.string().pattern(/^[A-Za-z0-9][A-Za-z0-9._-]*$/),
   enabled: z.boolean().default(true),
@@ -214,13 +217,14 @@ const SWEEP_INTERVAL_MS = 10_000
  * which legitimately resolves to `undefined` when unset (the schema keeps it
  * optional, so `Required` alone would over-narrow it to `string`).
  */
-type ResolvedConfig = Required<Omit<Config, 'publicBaseUrl' | 'trustedHosts' | 'devicesFile' | 'lanBind' | 'profile' | 'tunnelToken'>> & {
+type ResolvedConfig = Required<Omit<Config, 'publicBaseUrl' | 'trustedHosts' | 'devicesFile' | 'lanBind' | 'profile' | 'tunnelToken' | 'preferredLanAddress'>> & {
   publicBaseUrl: string | undefined
   trustedHosts: string[] | undefined
   devicesFile: string
   /** undefined until the user flips the toggle once; undefined never writes the patch. */
   lanBind: boolean | undefined
   tunnelToken: string | undefined
+  preferredLanAddress: string | undefined
   profile: string
 }
 
@@ -264,6 +268,7 @@ const DEFAULTS: ResolvedConfig = {
   tunnelToken: undefined,
   relay: false,
   telemetry: false,
+  preferredLanAddress: undefined,
   lanBind: undefined,
   profile: process.env.DSH_PROFILE ?? 'web',
   enabled: true,
@@ -292,6 +297,7 @@ function applyImpl(ctx: Context, config?: Config): void {
     tunnelToken: config?.tunnelToken,
     relay: config?.relay ?? DEFAULTS.relay,
     telemetry: config?.telemetry ?? DEFAULTS.telemetry,
+    preferredLanAddress: config?.preferredLanAddress,
     lanBind: config?.lanBind,
     profile: config?.profile ?? process.env.DSH_PROFILE ?? DEFAULTS.profile,
     enabled: config?.enabled ?? DEFAULTS.enabled,
@@ -316,6 +322,7 @@ function applyImpl(ctx: Context, config?: Config): void {
       tunnelToken: value.tunnelToken,
       relay: value.relay ?? DEFAULTS.relay,
       telemetry: value.telemetry ?? DEFAULTS.telemetry,
+      preferredLanAddress: value.preferredLanAddress,
       lanBind: value.lanBind,
       profile: value.profile ?? process.env.DSH_PROFILE ?? DEFAULTS.profile,
       enabled: value.enabled ?? DEFAULTS.enabled,
@@ -426,12 +433,15 @@ function applyImpl(ctx: Context, config?: Config): void {
   // only update when both facts are readable.
   const bindKnown = (ctx.webServer.host === '0.0.0.0' || ctx.webServer.host === '127.0.0.1')
     && Number.isFinite(ctx.webServer.port)
-  if (bindKnown) {
+  const updateLanBases = (preferred: string | undefined): void => {
+    if (!bindKnown) return
     const lanBases = ctx.webServer.host === '0.0.0.0'
-      ? lanIPv4Addresses().map(address => ({ address, base: `http://${address}:${String(ctx.webServer.port)}` }))
+      ? selectedLanAddresses(lanIPv4Addresses(), preferred)
+        .map(address => ({ address, base: `http://${address}:${String(ctx.webServer.port)}` }))
       : []
     service.setLanBases(lanBases)
   }
+  updateLanBases(resolve().preferredLanAddress)
 
   // Push a committed settings section into the service and gate. The service
   // config object is read per operation (token mint, touch, sweep), and the
@@ -469,8 +479,11 @@ function applyImpl(ctx: Context, config?: Config): void {
       blockHost: state.host ?? null,
       bindHost: ctx.webServer.host,
       port,
+      interfaces: lanIPv4Interfaces(),
+      preferredLanAddress: resolvedNow.preferredLanAddress ?? null,
       lanUrls: ctx.webServer.host === '0.0.0.0' && port !== undefined
-        ? lanIPv4Addresses().map(address => `http://${address}:${String(port)}`)
+        ? selectedLanAddresses(lanIPv4Addresses(), resolvedNow.preferredLanAddress)
+          .map(address => `http://${address}:${String(port)}`)
         : [],
       firewall: port !== undefined ? firewallSummary(port, lanOn) : { ok: true, managed: false },
       platform: process.platform,
@@ -647,6 +660,7 @@ function applyImpl(ctx: Context, config?: Config): void {
   const sync = (): void => {
     const value = resolve()
     service.config = pairingConfigOf(value)
+    updateLanBases(value.preferredLanAddress)
     // LAN bind toggle: only write the managed patch block once the user has
     // flipped it (undefined = untouched, never write). Desired host/port come
     // from the CLI flags when given (flags win), else from the toggle and
