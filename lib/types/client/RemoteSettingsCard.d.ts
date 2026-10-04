@@ -1,6 +1,6 @@
 /**
  * The remote-control settings card: pairing security and device limits.
- * Registers into the `web-ui.plugin.item` child slot the Web UI plugin group
+ * Registers into the `settings.plugin.item` child slot the settings group
  * renders, bound to the `remote-web-ui` settings namespace.
  */
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots';
@@ -39,6 +39,8 @@ export interface RemoteSettings {
      * pairing cookie survive restarts without any setup.
      */
     relay?: boolean;
+    /** Send a daily anonymous package heartbeat to dsh-market.com. */
+    telemetry?: boolean;
     /**
      * LAN bind toggle: once flipped, the plugin manages the profile patch's
      * webserver block (0.0.0.0 / 127.0.0.1) and the host firewall rule.
@@ -69,6 +71,7 @@ export interface RemoteSettingsCardState extends CardShell {
     tunnelToken: CardFieldState;
     /** Stable-origin relay switch. */
     relay: CardFieldState;
+    telemetry: CardFieldState;
     /** LAN bind toggle. */
     lanBind: CardFieldState;
 }
@@ -98,7 +101,7 @@ export declare class RemoteSettingsCardController {
     dispose(): void;
 }
 /** Props the renderer binds for the remote-control card. */
-export type RemoteSettingsCardProps = PropsRuntime<'web-ui.plugin.item'> & PropsLocale<'remote'> & InjectFace<RemoteSettingsCardFace>;
+export type RemoteSettingsCardProps = PropsRuntime<'settings.plugin.item'> & PropsLocale<'remote'> & InjectFace<RemoteSettingsCardFace>;
 /**
  * Render the remote-control card.
  * @param props - locale copy, the card snapshot, and its form actions.

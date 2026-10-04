@@ -59,18 +59,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   }
 
   interface SlotMap {
-    /**
-     * The sidebar foot seat beside the settings trigger, declared by the
-     * sidebar shell on deployments that carry the feature seat; the shell
-     * passes only its column display state.
-     */
-    /**
-     * The child slot the Web UI plugin group declares; this card registers
-     * into the group instead of the top-level `settings.plugin.item` list.
-     * Spelled here with the same shape so this package can register without
-     * depending on the sibling UI package.
-     */
-    'web-ui.plugin.item': { kind: 'list'; scope: 'root'; owner: SettingsPluginItemOwnerProps }
+    'settings.plugin.item': { kind: 'keyed'; scope: 'root'; owner: SettingsPluginItemOwnerProps }
   }
 }
 
@@ -122,10 +111,6 @@ export function apply(ctx: ClientContext): void {
   ctx.effect(() => () => {
     ;(window as unknown as { __dshRemoteAdapt?: RemoteAdaptGlobal }).__dshRemoteAdapt?.setEnabled?.(false)
   }, 'remote-web-ui: mobile-adapt')
-
-  // Anonymous install heartbeat (docs/telemetry.md): one beat per browser per
-  // UTC day, package name only, silent failure.
-  reportDailyHeartbeat([{ name: 'dsh-remote-web-ui-moe4all' }])
 
   ctx.effect(() => {
     try {
@@ -179,6 +164,14 @@ export function apply(ctx: ClientContext): void {
   if (adapt !== undefined) adapt.translate = t
   const binder = ctx.get('webUiSettings') ?? ctx.settingsScope
   const settingsScope = binder.bind<RemoteSettings>({ namespace: REMOTE_WEB_UI_NS })
+  const syncTelemetry = (): void => {
+    const snapshot = settingsScope.getSnapshot()
+    if (snapshot.status === 'ready' && snapshot.value?.telemetry === true) {
+      reportDailyHeartbeat([{ name: 'dsh-remote-web-ui-moe4all' }])
+    }
+  }
+  ctx.effect(() => settingsScope.subscribe(syncTelemetry), 'remote-web-ui: telemetry consent')
+  syncTelemetry()
   const enabled = (): boolean => {
     const snapshot = settingsScope.getSnapshot()
     return snapshot.status === 'ready'
@@ -231,15 +224,14 @@ export function apply(ctx: ClientContext): void {
     }
   })
 
-  // Plugin configuration card: one staged form over the `remote-web-ui`
-  // settings namespace, contributed to the Web UI plugin group.
+  // Plugin configuration card in the official configurable-plugins tab.
   const remoteSettings = new RemoteSettingsCardController(settingsScope)
-  ctx.slots.inject('web-ui.plugin.item', () => {
+  ctx.slots.inject('settings.plugin.item', () => {
     try {
       const unregister = ctx.slots.register({
-        name: 'web-ui.plugin.item',
-        id: 'remote-web-ui',
-        order: 90,
+        name: 'settings.plugin.item',
+        key: REMOTE_WEB_UI_NS,
+        priority: 90,
         locale: NS,
         inject: () => remoteSettings.inject(),
       }, RemoteSettingsCard)

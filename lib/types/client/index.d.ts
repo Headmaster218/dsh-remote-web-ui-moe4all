@@ -14,19 +14,8 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
         remote: RemoteKey;
     }
     interface SlotMap {
-        /**
-         * The sidebar foot seat beside the settings trigger, declared by the
-         * sidebar shell on deployments that carry the feature seat; the shell
-         * passes only its column display state.
-         */
-        /**
-         * The child slot the Web UI plugin group declares; this card registers
-         * into the group instead of the top-level `settings.plugin.item` list.
-         * Spelled here with the same shape so this package can register without
-         * depending on the sibling UI package.
-         */
-        'web-ui.plugin.item': {
-            kind: 'list';
+        'settings.plugin.item': {
+            kind: 'keyed';
             scope: 'root';
             owner: SettingsPluginItemOwnerProps;
         };

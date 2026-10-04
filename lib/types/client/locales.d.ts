@@ -95,6 +95,8 @@ export declare const zh: {
     'settings.tunnelTokenHint': string;
     'settings.relay': string;
     'settings.relayHint': string;
+    'settings.telemetry': string;
+    'settings.telemetryHint': string;
     'settings.lanBind': string;
     'settings.lanBindHint': string;
     'lan.cardTitle': string;
@@ -264,6 +266,8 @@ export declare const en: {
     'settings.tunnelTokenHint': string;
     'settings.relay': string;
     'settings.relayHint': string;
+    'settings.telemetry': string;
+    'settings.telemetryHint': string;
     'settings.lanBind': string;
     'settings.lanBindHint': string;
     'lan.cardTitle': string;

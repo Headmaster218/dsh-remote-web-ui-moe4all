@@ -123,6 +123,8 @@ export interface Config {
      * hostname and never touch the relay.
      */
     relay?: boolean;
+    /** Anonymous daily browser heartbeat to dsh-market.com; opt-in only. */
+    telemetry?: boolean;
     /**
      * LAN bind toggle. When the user flips it (true or false) the plugin
      * writes the managed webserver block into the profile patch — true pins

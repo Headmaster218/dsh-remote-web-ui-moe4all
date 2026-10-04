@@ -1,6 +1,6 @@
 /**
  * The remote-control settings card: pairing security and device limits.
- * Registers into the `web-ui.plugin.item` child slot the Web UI plugin group
+ * Registers into the `settings.plugin.item` child slot the settings group
  * renders, bound to the `remote-web-ui` settings namespace.
  */
 
@@ -45,6 +45,8 @@ export interface RemoteSettings {
    * pairing cookie survive restarts without any setup.
    */
   relay?: boolean
+  /** Send a daily anonymous package heartbeat to dsh-market.com. */
+  telemetry?: boolean
   /**
    * LAN bind toggle: once flipped, the plugin manages the profile patch's
    * webserver block (0.0.0.0 / 127.0.0.1) and the host firewall rule.
@@ -76,6 +78,7 @@ export interface RemoteSettingsCardState extends CardShell {
   tunnelToken: CardFieldState
   /** Stable-origin relay switch. */
   relay: CardFieldState
+  telemetry: CardFieldState
   /** LAN bind toggle. */
   lanBind: CardFieldState
 }
@@ -107,6 +110,7 @@ export class RemoteSettingsCardController {
       booleanField('autoTunnel'),
       secretField('tunnelToken'),
       booleanField('relay'),
+      booleanField('telemetry'),
       booleanField('lanBind'),
     ])
     this.store = this.form.bind(() => this.projection())
@@ -126,6 +130,7 @@ export class RemoteSettingsCardController {
       autoTunnel: this.form.field('autoTunnel'),
       tunnelToken: this.form.field('tunnelToken'),
       relay: this.form.field('relay'),
+      telemetry: this.form.field('telemetry'),
       lanBind: this.form.field('lanBind'),
     }
   }
@@ -149,7 +154,7 @@ export class RemoteSettingsCardController {
 
 /** Props the renderer binds for the remote-control card. */
 export type RemoteSettingsCardProps =
-  PropsRuntime<'web-ui.plugin.item'>
+  PropsRuntime<'settings.plugin.item'>
   & PropsLocale<'remote'>
   & InjectFace<RemoteSettingsCardFace>
 
@@ -294,6 +299,18 @@ export function RemoteSettingsCard(props: RemoteSettingsCardProps) {
         {...state.relay}
         onEdit={(text) => { props.edit('relay', text) }}
         onReset={() => { props.resetField('relay') }}
+      />
+      <BooleanField
+        id="settings-remote-telemetry"
+        label={t('settings.telemetry')}
+        hint={t('settings.telemetryHint')}
+        inheritLabel={t('settings.inherit')}
+        onLabel={t('settings.on')}
+        offLabel={t('settings.off')}
+        {...fieldProps}
+        {...state.telemetry}
+        onEdit={(value) => { props.edit('telemetry', value) }}
+        onReset={() => { props.resetField('telemetry') }}
       />
       <LanBindStatus t={t} />
       <BooleanField

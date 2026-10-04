@@ -160,6 +160,8 @@ export interface Config {
    * hostname and never touch the relay.
    */
   relay?: boolean
+  /** Anonymous daily browser heartbeat to dsh-market.com; opt-in only. */
+  telemetry?: boolean
   /**
    * LAN bind toggle. When the user flips it (true or false) the plugin
    * writes the managed webserver block into the profile patch — true pins
@@ -197,7 +199,8 @@ export const Config: z<Config> = z.object({
   devicesFile: z.string(),
   autoTunnel: z.boolean().default(false),
   tunnelToken: z.string().role('secret'),
-  relay: z.boolean().default(true),
+  relay: z.boolean().default(false),
+  telemetry: z.boolean().default(false),
   lanBind: z.boolean(),
   profile: z.string().pattern(/^[A-Za-z0-9][A-Za-z0-9._-]*$/),
   enabled: z.boolean().default(true),
@@ -259,7 +262,8 @@ const DEFAULTS: ResolvedConfig = {
   devicesFile: defaultDevicesFile(),
   autoTunnel: false,
   tunnelToken: undefined,
-  relay: true,
+  relay: false,
+  telemetry: false,
   lanBind: undefined,
   profile: process.env.DSH_PROFILE ?? 'web',
   enabled: true,
@@ -287,6 +291,7 @@ function applyImpl(ctx: Context, config?: Config): void {
     autoTunnel: config?.autoTunnel ?? DEFAULTS.autoTunnel,
     tunnelToken: config?.tunnelToken,
     relay: config?.relay ?? DEFAULTS.relay,
+    telemetry: config?.telemetry ?? DEFAULTS.telemetry,
     lanBind: config?.lanBind,
     profile: config?.profile ?? process.env.DSH_PROFILE ?? DEFAULTS.profile,
     enabled: config?.enabled ?? DEFAULTS.enabled,
@@ -310,6 +315,7 @@ function applyImpl(ctx: Context, config?: Config): void {
       autoTunnel: value.autoTunnel ?? DEFAULTS.autoTunnel,
       tunnelToken: value.tunnelToken,
       relay: value.relay ?? DEFAULTS.relay,
+      telemetry: value.telemetry ?? DEFAULTS.telemetry,
       lanBind: value.lanBind,
       profile: value.profile ?? process.env.DSH_PROFILE ?? DEFAULTS.profile,
       enabled: value.enabled ?? DEFAULTS.enabled,

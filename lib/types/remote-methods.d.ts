@@ -31,7 +31,7 @@ export declare const REMOTE_API_PATHS: {
  * Exact upgrade paths registered on webServer (the SDK matches upgrades by
  * exact path, not prefix). Query strings ride on the request URL.
  */
-export declare const REMOTE_UPGRADE_PATHS: readonly ["/remote/api/remote.mux", "/remote/sidebar/ws/terminal", "/remote/sidebar/ws/agent-terminals", "/remote/api/dsh-ssh/terminal"];
+export declare const REMOTE_UPGRADE_PATHS: readonly ["/remote/api/remote.mux", "/remote/api/events.mux", "/remote/api/events.host", "/remote/sidebar/ws/terminal", "/remote/sidebar/ws/agent-terminals", "/remote/api/dsh-ssh/terminal"];
 /** Plugin-manager HTTP prefix: install/remove stay physically local. */
 export declare const PLUGIN_MANAGER_PATH = "/api/plugin-manager";
 /** Family settings-bridge HTTP prefix — re-exposed to paired devices (plain settings parity). */
