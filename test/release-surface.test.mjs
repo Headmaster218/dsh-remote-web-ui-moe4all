@@ -19,6 +19,7 @@ test('client bundle includes the official settings card and embedded styles', ()
   assert.match(bundle, /tag\.dataset\.pluginCss = tagId/)
   assert.doesNotMatch(bundle, /__MOE4ALL_CSS__/)
   assert.match(bundle, /moe4all\.phone-guide\.v1/)
+  assert.doesNotMatch(bundle, /require\("(?:clsx|qrcode\.react)"\)/)
 })
 
 test('QR adapter selection never silently widens an unavailable address', () => {

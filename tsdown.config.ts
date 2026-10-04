@@ -27,6 +27,7 @@ export default defineConfig([
     dts: false,
     clean: false,
     deps: {
+      alwaysBundle: ['clsx', 'qrcode.react'],
       neverBundle: specifier => specifier.startsWith('react') || specifier.startsWith('@deepseek-ai/'),
     },
     outputOptions: {
