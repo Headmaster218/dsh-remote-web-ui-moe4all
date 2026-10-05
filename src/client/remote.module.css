@@ -773,6 +773,14 @@
   min-width: 0;
 }
 
+.entryLabel {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .entryRow[data-rail='rail'] {
   flex-direction: column-reverse;
   gap: 4px;

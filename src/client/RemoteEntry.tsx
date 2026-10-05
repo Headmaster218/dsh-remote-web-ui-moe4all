@@ -247,7 +247,7 @@ export function RemoteEntry({ wide, t }: RemoteEntryProps) {
   )
 }
 
-/** The trigger: an icon-only control with a persistent accessible label. */
+/** The trigger keeps its label visible in the wide sidebar. */
 function TooltipAnchor({ wide, label, onClick, expanded }: { wide: boolean; label: string; onClick: () => void; expanded: boolean }) {
   return (
     <button
@@ -260,6 +260,7 @@ function TooltipAnchor({ wide, label, onClick, expanded }: { wide: boolean; labe
       onClick={onClick}
     >
       <PhoneIcon size={wide ? 16 : 18} />
+      {wide && <span className={css.entryLabel}>{label}</span>}
     </button>
   )
 }
