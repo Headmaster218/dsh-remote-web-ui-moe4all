@@ -111,7 +111,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && tsdown --config tsdown.config.ts && node scripts/embed-css.mjs",
-    "test": "node --test test/*.test.mjs",
+    "test": "node --experimental-strip-types --test test/*.test.mjs",
     "typecheck": "tsc -b --pretty false"
   }
 }
