@@ -170,13 +170,13 @@
 }
 
 .save {
-  background: var(--dsw-alias-label-primary);
-  color: var(--dsw-alias-bg-layer-3);
+  background: var(--dsw-alias-button-primary-fill);
+  color: var(--dsw-alias-label-primary-foreground);
 }
 
 .discard:disabled,
 .save:disabled {
-  opacity: 0.4;
+  opacity: var(--dsw-control-disabled-opacity, 0.4);
   cursor: default;
 }
 

@@ -101,7 +101,7 @@
 }
 
 .trigger:disabled {
-  opacity: 0.5;
+  opacity: var(--dsw-control-disabled-opacity, 0.5);
   cursor: default;
 }
 
@@ -179,7 +179,7 @@
 }
 
 .close:disabled {
-  opacity: 0.5;
+  opacity: var(--dsw-control-disabled-opacity, 0.5);
   cursor: default;
 }
 
@@ -404,7 +404,7 @@
 }
 
 .action:disabled {
-  opacity: 0.5;
+  opacity: var(--dsw-control-disabled-opacity, 0.5);
   cursor: default;
 }
 
@@ -540,7 +540,7 @@
   border: 1px solid var(--dsw-alias-brand-primary);
   border-radius: 10px;
   background: var(--dsw-alias-brand-primary);
-  color: #fff;
+  color: var(--dsw-alias-label-primary-inverted);
   font: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -553,7 +553,7 @@
 }
 
 .fencePairButton:disabled {
-  opacity: 0.55;
+  opacity: var(--dsw-control-disabled-opacity, 0.55);
   cursor: not-allowed;
 }
 
