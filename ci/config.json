@@ -1,0 +1,20 @@
+{
+  "package": "dsh-remote-web-ui-moe4all",
+  "clientRequires": [
+    "react",
+    "react-dom/client",
+    "react-dom",
+    "@deepseek-ai/dsh-client-ui-primitives",
+    "react/jsx-runtime",
+    "@deepseek-ai/dsh-client-runtime/client"
+  ],
+  "tests": [
+    {
+      "kind": "node-test",
+      "directory": "test",
+      "extensions": [
+        ".test.mjs"
+      ]
+    }
+  ]
+}

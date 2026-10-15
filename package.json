@@ -21,7 +21,6 @@
       "types": "./lib/types/client/index.d.ts",
       "default": "./lib/client.js"
     },
-    "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "files": [
@@ -60,7 +59,9 @@
         "@deepseek-ai/dsh-client-ui-settings",
         "@deepseek-ai/dsh-client-ui-sidebar"
       ],
-      "external": ["@deepseek-ai/dsh-client-runtime/client"],
+      "external": [
+        "@deepseek-ai/dsh-client-runtime/client"
+      ],
       "platform": "web"
     }
   },
@@ -112,6 +113,12 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && tsdown --config tsdown.config.ts && node scripts/embed-css.mjs",
     "test": "node --experimental-strip-types --test test/*.test.mjs",
-    "typecheck": "tsc -b --pretty false"
-  }
+    "typecheck": "tsc -b --pretty false",
+    "ci:check": "node --experimental-vm-modules ci/plugin-ci.mjs check",
+    "ci:test": "node ci/plugin-ci.mjs test",
+    "ci:contract": "node ci/plugin-ci.mjs test-contract",
+    "release:build": "node --experimental-vm-modules ci/plugin-ci.mjs pack",
+    "release:verify": "node ci/plugin-ci.mjs verify-release"
+  },
+  "packageManager": "npm@10.9.2"
 }
