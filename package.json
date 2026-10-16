@@ -1,7 +1,7 @@
 {
   "name": "dsh-remote-web-ui-moe4all",
   "description": "MoE4All edition of scan-to-pair remote access for the DSH web GUI",
-  "version": "0.3.17-moe4all.1",
+  "version": "0.3.17-moe4all.2",
   "type": "module",
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
